@@ -47,7 +47,7 @@ export async function updatePartialProduct(req, res) {
   const updateFields = req.body;
 
   try {
-    const updatedProduct = await productService.updatePartialProduct(id, updateFields); // <-- fix here
+    const updatedProduct = await productService.updatePartialProduct(id, updateFields); 
     if (!updatedProduct) {
       return res.status(404).json({ message: 'Product not found' });
     }
