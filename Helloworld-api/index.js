@@ -1,15 +1,14 @@
-import express from 'express'
+
+import express from 'express';
+import productRoutes from './src/Routes/post.routes.js'; 
 
 const app = express();
 const port = 3000;
 
-app.listen(port, () => console.log(`Server is running on http://localhost:${port}`));
+app.use(express.json());
 
+app.use('/products', productRoutes);
 
-app.get('/foo', (req, res) => {
-    console.log(req.query);
-});
-
-app.get('/IT', (req, res) => {
-    console.log(req.body);
+app.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
 });
