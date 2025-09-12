@@ -1,3 +1,15 @@
+import NotFoundError from '../utils/NotFoundError.js';
+
+export const getProductById = (id) => {
+    const post = posts.find(p => p.id === id);
+    if (!post) {
+        // Instead of returning null, we throw a descriptive error.
+        throw new NotFoundError(`Post with ID ${id} not found.`);
+    }
+    return post;
+};
+
+
 let products = [
     { id: 1, name: "Laptop", price: 1000 },
     { id: 2, name: "Smartphones", price: 500 },
@@ -9,9 +21,6 @@ export const getAllProduct = () => {
     return products;
 };
 
-export const getProductById = (id) => {
-    return products.find(p => p.id === id);
-};
 
 export const createProduct = (postData) => {
     const newProduct = { id: nextId++, ...postData };

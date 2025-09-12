@@ -3,6 +3,7 @@ import productRoutes from './src/Routes/post.routes.js';
 import commentRoutes from './src/Routes/comment.route.js';
 import morgan from 'morgan';
 import config from './src/config/index.js';
+import errorHandler from './src/middleware/errorHandler.js';
 
 const app = express();
 
@@ -16,6 +17,7 @@ if (config.nodeEnv === 'development') {
 
 app.use(morgan('combined'));
 app.use(express.json());
+app.use(errorHandler);
 app.use('/', commentRoutes);
 app.use('/products', productRoutes);
 
