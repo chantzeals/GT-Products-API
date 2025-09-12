@@ -17,8 +17,7 @@ if (process.env.NODE_ENV === 'development') {
   console.log('Running in unknown mode');
 }
 
-
-app.use(morgan('dev'));
+app.use(morgan('combined'));
 app.use(express.json());
 app.use('/', commentRoutes);
 app.use('/products', productRoutes);
