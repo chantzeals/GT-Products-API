@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import * as postValidator from '../validators/post.validator.js';
+import * as postValidator from '../../../middleware/validator.middleware.js';
 import * as productController from '../Controllers/post.controller.js';
 
 const router = Router(); 

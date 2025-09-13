@@ -3,7 +3,7 @@ import productRoutes from './src/api/v1/Routes/post.routes.js';
 import commentRoutes from './src/api/v1/Routes/comment.route.js';
 import morgan from 'morgan';
 import config from './src/config/index.js';
-import errorHandler from './src/middleware/errorHandler.js';
+import { errorHandler } from './src/middleware/errorHandler.middleware.js';
 import { testConnection } from './src/config/db.js';
 
 const app = express();
