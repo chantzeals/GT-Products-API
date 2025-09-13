@@ -3,23 +3,29 @@ import { body } from 'express-validator';
 const forbiddenWords = ['spam', 'advertisement'];
 
 export const createPostRules = [
-  body('name')
-    .exists().withMessage('Name is required')
-    .isString().withMessage('Name must be a string')
-    .isLength({ min: 5, max: 100 }).withMessage('Name must be between 5 and 100 characters')
+  body('product_name')  
+    .exists().withMessage('Product name is required')
+    .isString().withMessage('Product name must be a string')
+    .isLength({ min: 5, max: 100 }).withMessage('Product name must be between 5 and 100 characters')
     .custom(value => {
       const lower = value.toLowerCase();
       for (const word of forbiddenWords) {
         if (lower.includes(word)) {
-          throw new Error(`Name cannot contain forbidden word: ${word}`);
+          throw new Error(`Product name cannot contain forbidden word: ${word}`);
         }
       }
-      return true; 
+      return true;  
     })
-    .trim(),
+    .trim(),  
   body('price')
     .exists().withMessage('Price is required')
-    .isNumeric().withMessage('Price must be a number'),
+    .isNumeric().withMessage('Price must be a number')
+    .custom(value => {
+      if (value <= 0) {
+        throw new Error('Price must be a positive number');
+      }
+      return true;  
+    }),
 ];
 
 export const updateValidationRules = [
