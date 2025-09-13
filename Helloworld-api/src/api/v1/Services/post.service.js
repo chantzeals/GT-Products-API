@@ -1,4 +1,4 @@
-import NotFoundError from '../utils/NotFoundError.js';
+import NotFoundError from '../../../utils/NotFoundError.js';
 
 export const getProductById = (id) => {
     const post = posts.find(p => p.id === id);

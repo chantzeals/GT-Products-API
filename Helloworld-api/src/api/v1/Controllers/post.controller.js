@@ -1,8 +1,6 @@
 import { validationResult } from 'express-validator'; 
-import * as productService from '../Services/post.service.js';
-import asyncHandler from '../utils/asyncHandler.js'; 
-
-
+import * as productService from '../Services/post.service.js'; 
+import asyncHandler from '../../../utils/asyncHandler.js'; 
 
 export const getAllProduct = asyncHandler((req, res) => {
   const products = productService.getAllProduct();

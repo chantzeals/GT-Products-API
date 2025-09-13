@@ -1,6 +1,6 @@
-// comment.route.js
 import express from 'express';
 import CommentController from '../Controllers/comment.controller.js'; 
+
 const router = express.Router();
 
 router.get('/comments', CommentController.getAll);

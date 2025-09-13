@@ -1,5 +1,5 @@
-import CommentService from '../../../Services/comment.service.js';
-import { getProductById } from '../../../Services/post.service.js';
+import CommentService from '../Services/comment.service.js';
+import { getProductById } from '../Services/post.service.js';
 
 class CommentController {
   static getAll(req, res) {

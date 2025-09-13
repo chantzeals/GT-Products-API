@@ -1,6 +1,6 @@
 import express from 'express';
-import productRoutes from './src/Routes/post.routes.js';
-import commentRoutes from './src/Routes/comment.route.js';
+import productRoutes from './src/api/v1/Routes/post.routes.js';
+import commentRoutes from './src/api/v1/Routes/comment.route.js';
 import morgan from 'morgan';
 import config from './src/config/index.js';
 import errorHandler from './src/middleware/errorHandler.js';
@@ -17,10 +17,9 @@ if (config.nodeEnv === 'development') {
 
 app.use(morgan('combined'));
 app.use(express.json());
+app.use('/api/v1/products', productRoutes);
 app.use(errorHandler);
 app.use('/', commentRoutes);
-app.use('/products', productRoutes);
-
 app.listen(config.port, () => {
   console.log(`Server is running on http://localhost:${config.port}`);
 });
