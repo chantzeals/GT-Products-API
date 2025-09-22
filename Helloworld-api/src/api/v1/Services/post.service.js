@@ -2,21 +2,44 @@ import { ApiError } from '../../../utils/ApiError.js';
 import pool from '../../../config/db.js';  
 
 export const getAllPost = async () => {
-    const query = 'SELECT * FROM posts';
-    try {
-        const [rows] = await pool.query(query);  
-        return rows;
-    } catch (error) {
-        throw new ApiError(500, 'Error fetching posts from the database');
-    }
+  const query = `
+    SELECT
+      p.id,
+      p.title,
+      p.content,
+      p.authorId,
+      u.username AS authorUsername,
+      u.email AS authorEmail
+    FROM posts p
+    JOIN users u ON p.authorId = u.id
+  `;
+  try {
+    const [rows] = await pool.query(query);
+    return rows;
+  } catch (error) {
+    throw new ApiError(500, 'Error fetching posts');
+  }
 };
 
+
 export const getPostById = async (id) => {
-    const [rows] = await pool.query('SELECT * FROM posts WHERE id = ?', [id]);
-    if (!rows[0]) {
-        throw new ApiError(404, "Post not found"); 
-    }
-    return rows[0];  
+  const query = `
+    SELECT
+      p.id,
+      p.title,
+      p.content,
+      p.authorId,
+      u.username AS authorUsername,
+      u.email AS authorEmail
+    FROM posts p
+    JOIN users u ON p.authorId = u.id
+    WHERE p.id = ?
+  `;
+  const [rows] = await pool.query(query, [id]);
+  if (!rows[0]) {
+    throw new ApiError(404, 'Post not found');
+  }
+  return rows[0];
 };
 
 export const createPost = async (postData) => {
