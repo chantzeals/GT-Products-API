@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import * as commentController from '../Controllers/comment.controller.js';
-import { createCommentRules, validate } from '../../../middleware/validator.middleware.js';
+import { validateComment } from '../../../middleware/validator.middleware.js';
 
-const router = Router();
+const router = Router();  
 
-router.post('/comments', createCommentRules, validate, commentController.createComment);
+router.get('/comments', commentController.getAllComments);
 
 export default router;
