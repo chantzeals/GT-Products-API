@@ -1,91 +1,126 @@
 import { ApiError } from '../../../utils/ApiError.js';  
 import pool from '../../../config/db.js';  
 
-export const getAllProduct = async () => {
-    const query = 'SELECT * FROM products';
+export const getAllPost = async () => {
+    const query = 'SELECT * FROM posts';
     try {
         const [rows] = await pool.query(query);  
         return rows;
     } catch (error) {
-        throw new ApiError(500, 'Error fetching products from the database');
+        throw new ApiError(500, 'Error fetching posts from the database');
     }
 };
 
-
-export const getProductById = async (id) => {
+export const getPostById = async (id) => {
     const [rows] = await pool.query('SELECT * FROM posts WHERE id = ?', [id]);
-    
-
     if (!rows[0]) {
         throw new ApiError(404, "Post not found"); 
     }
     return rows[0];  
 };
 
-export const createProduct = async (postData) => {
-    const { product_name, price } = postData;
+export const createPost = async (postData) => {
+    const { title, content, authorId } = postData;
 
-    if (!product_name || typeof product_name !== 'string' || product_name.trim() === '') {
-        throw new ApiError(400, 'Product name is required and should be a non-empty string.');
+    if (!title || typeof title !== 'string' || title.trim() === '') {
+        throw new ApiError(400, 'Title is required and should be a non-empty string.');
     }
 
-    if (!price || typeof price !== 'number' || price <= 0) {
-        throw new ApiError(400, 'Price must be a valid positive number.');
+    if (!content || typeof content !== 'string' || content.trim() === '') {
+        throw new ApiError(400, 'Content is required and should be a non-empty string.');
     }
 
-    const query = 'INSERT INTO products (product_name, price) VALUES (?, ?)';
+    if (!authorId || !Number.isInteger(authorId) || authorId < 1) {
+        throw new ApiError(400, 'A valid author ID is required.');
+    }
+
+    const query = 'INSERT INTO posts (title, content, authorId) VALUES (?, ?, ?)';
 
     try {
-        const [result] = await pool.query(query, [product_name, price]);
-        const newProduct = { id: result.insertId, product_name, price };
-        return newProduct;
+        const [result] = await pool.query(query, [title, content, authorId]);
+        const newPost = { id: result.insertId, title, content, authorId };
+        return newPost;
     } catch (error) {
-        console.error('Error creating product:', error);
-        throw new ApiError(500, 'Error creating new product');
-    }
-};
-
-export const updateProduct = async (id, postData) => {
-    const { product_name, price } = postData;
-    const query = 'UPDATE products SET product_name = ?, price = ? WHERE id = ?';
-
-    try {
-        const [result] = await pool.query(query, [product_name, price, id]);
-        if (result.affectedRows === 0) {
-            throw new ApiError(404, 'Product not found'); 
+        if (error.code === 'ER_NO_REFERENCED_ROW_2') {
+            throw new ApiError(400, 'Invalid author ID. User does not exist.');
         }
-        return { id, product_name, price };
-    } catch (error) {
-        throw new ApiError(500, 'Error updating product');
+        console.error('Error creating post:', error);
+        throw new ApiError(500, 'Error creating new post');
     }
 };
 
+export const updatePost = async (id, postData) => {
+    const { title, content } = postData;
 
-export const deleteProduct = async (id) => {
-    const query = 'DELETE FROM products WHERE id = ?';
+    if (!title || typeof title !== 'string' || title.trim() === '') {
+        throw new ApiError(400, 'Title is required and should be a non-empty string.');
+    }
+
+    if (!content || typeof content !== 'string' || content.trim() === '') {
+        throw new ApiError(400, 'Content is required and should be a non-empty string.');
+    }
+
+    const query = 'UPDATE posts SET title = ?, content = ? WHERE id = ?';
+
+    try {
+        const [result] = await pool.query(query, [title, content, id]);
+        if (result.affectedRows === 0) {
+            throw new ApiError(404, 'Post not found'); 
+        }
+        return { id, title, content };
+    } catch (error) {
+        throw new ApiError(500, 'Error updating post');
+    }
+};
+
+export const deletePost = async (id) => {
+    const query = 'DELETE FROM posts WHERE id = ?';
 
     try {
         const [result] = await pool.query(query, [id]);
         if (result.affectedRows === 0) {
-            throw new ApiError(404, 'Product not found');  
+            throw new ApiError(404, 'Post not found');  
         }
         return true; 
     } catch (error) {
-        throw new ApiError(500, 'Error deleting product');
+        throw new ApiError(500, 'Error deleting post');
     }
 };
 
-export const updatePartialProduct = async (id, updateFields) => {
-    const { product_name, price } = updateFields;
-    const query = 'UPDATE products SET product_name = ?, price = ? WHERE id = ?';
+export const updatePartialPost = async (id, updateFields) => {
+    const fields = [];
+    const values = [];
+
+    if (updateFields.title !== undefined) {
+        if (typeof updateFields.title !== 'string' || updateFields.title.trim() === '') {
+            throw new ApiError(400, 'Title should be a non-empty string.');
+        }
+        fields.push('title = ?');
+        values.push(updateFields.title);
+    }
+
+    if (updateFields.content !== undefined) {
+        if (typeof updateFields.content !== 'string' || updateFields.content.trim() === '') {
+            throw new ApiError(400, 'Content should be a non-empty string.');
+        }
+        fields.push('content = ?');
+        values.push(updateFields.content);
+    }
+
+    if (fields.length === 0) {
+        throw new ApiError(400, 'No valid fields provided for update.');
+    }
+
+    const query = `UPDATE posts SET ${fields.join(', ')} WHERE id = ?`;
+    values.push(id);
 
     try {
-        const [result] = await pool.query(query, [product_name, price, id]);
+        const [result] = await pool.query(query, values);
         if (result.affectedRows === 0) {
-            throw new ApiError(404, 'Product not found');  
+            throw new ApiError(404, 'Post not found');  
         }
-        return { id, product_name, price };
+        return { id, ...updateFields };
     } catch (error) {
-        throw new ApiError(500, 'Error partially updating product');
+        throw new ApiError(500, 'Error partially updating post');
     }
 };

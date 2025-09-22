@@ -6,15 +6,15 @@ class CommentService {
     return comments;
   }
 
-  static getByProductId(productId) {
-    return comments.filter(comment => comment.productId === productId);
+  static getByPostId(postId) {
+    return comments.filter(comment => comment.postId === postId);
   }
 
-  static create(productId, text) {
+  static create(postId, text) {
     const comment = {
       id: nextId++,
       text,
-      productId
+      postId
     };
     comments.push(comment);
     return comment;

@@ -1,15 +1,15 @@
 import { Router } from 'express';
 import * as postValidator from '../../../middleware/validator.middleware.js';
-import * as productController from '../Controllers/post.controller.js';
+import * as postController from '../Controllers/post.controller.js';
 
 const router = Router(); 
 
-router.post('/', postValidator.createPostRules, productController.createProduct);
-router.put('/:id', postValidator.updateValidationRules, productController.updateProduct);
-router.patch('/:id', postValidator.updateValidationRules, productController.updatePartialProduct);
+router.post('/', postValidator.createPostRules, postController.createPost);
+router.put('/:id', postValidator.updateValidationRules, postController.updatePost);
+router.patch('/:id', postValidator.updateValidationRules, postController.updatePartialPost);
 
-router.get('/', productController.getAllProduct);
-router.get('/:id', productController.getProductById);
-router.delete('/:id', productController.deleteProduct);
+router.get('/', postController.getAllPost);
+router.get('/:id', postController.getPostById);
+router.delete('/:id', postController.deletePost);
 
 export default router;

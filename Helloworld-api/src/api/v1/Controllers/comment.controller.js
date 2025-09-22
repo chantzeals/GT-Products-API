@@ -1,21 +1,21 @@
 import CommentService from '../Services/comment.service.js';
-import { getProductById } from '../Services/post.service.js';
+import { getPostById } from '../Services/post.service.js';
 
 class CommentController {
- 
+
   static getAll(req, res) {
     const comments = CommentService.getAll();
     res.json(comments);
   }
 
-  static getByProductId(req, res) {
-    const productId = parseInt(req.params.productId);
-    const comments = CommentService.getByProductId(productId);
+  static getByPostId(req, res) {
+    const postId = parseInt(req.params.postId);
+    const comments = CommentService.getByPostId(postId);
     res.json(comments);
   }
 
   static async create(req, res) {
-    const productId = parseInt(req.params.productId);
+    const postId = parseInt(req.params.postId);
     const { text } = req.body;
 
     if (!text) {
@@ -23,13 +23,14 @@ class CommentController {
     }
 
     try {
-      const product = await getProductById(productId);  
+      const post = await getPostById(postId);
 
-      if (!product) {
-        return res.status(404).json({ error: 'Product not found' });
+      if (!post) {
+        return res.status(404).json({ error: 'Post not found' });
       }
-      const comment = CommentService.create(productId, text);
-      res.status(201).json(comment); 
+
+      const comment = CommentService.create(postId, text);
+      res.status(201).json(comment);
     } catch (error) {
       console.error('Error creating comment:', error);
       res.status(500).json({ error: 'Internal Server Error' });

@@ -1,68 +1,64 @@
 import { validationResult } from 'express-validator'; 
-import * as productService from '../Services/post.service.js'; 
+import * as postService from '../Services/post.service.js'; 
 import asyncHandler from '../../../utils/asyncHandler.js'; 
 import { ApiResponse } from '../../../utils/ApiResponse.js';
 
-
-export const getAllProduct = asyncHandler(async (req, res) => {
-  const products = await productService.getAllProduct(); 
+export const getAllPost = asyncHandler(async (req, res) => {
+  const posts = await postService.getAllPost(); 
   return res
     .status(200)
-    .json(new ApiResponse(200, products, "Products retrieved successfully"));
+    .json(new ApiResponse(200, posts, "Posts retrieved successfully"));
 });
 
-
-export const getProductById = asyncHandler(async (req, res) => {
-  const productId = parseInt(req.params.id, 10);
-  const product = await productService.getProductById(productId);  
-  if (!product) {
-    return res.status(404).json(new ApiResponse(404, null, 'Product not found.'));
+export const getPostById = asyncHandler(async (req, res) => {
+  const postId = parseInt(req.params.id, 10);
+  const post = await postService.getPostById(postId);  
+  if (!post) {
+    return res.status(404).json(new ApiResponse(404, null, 'Post not found.'));
   }
-  return res.json(new ApiResponse(200, product, 'Product retrieved successfully'));
+  return res.json(new ApiResponse(200, post, 'Post retrieved successfully'));
 });
 
-
-export const createProduct = async (req, res) => {
+export const createPost = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json(new ApiResponse(400, errors.array(), 'Validation errors'));
   }
 
   try {
-    const newProduct = await productService.createProduct(req.body);
-    return res.status(201).json(new ApiResponse(201, newProduct, 'Product created successfully'));
+    const newPost = await postService.createPost(req.body);
+    return res.status(201).json(new ApiResponse(201, newPost, 'Post created successfully'));
   } catch (error) {
-    console.error('Error creating product:', error);
+    console.error('Error creating post:', error);
     return res.status(500).json(new ApiResponse(500, null, 'Internal server error'));
   }
 };
 
-
-export const updateProduct = asyncHandler(async (req, res) => {
+export const updatePost = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json(new ApiResponse(400, errors.array(), 'Validation errors'));
   }
 
-  const productId = parseInt(req.params.id, 10);
-  const updatedProduct = await productService.updateProduct(productId, req.body);  
-  if (!updatedProduct) {
-    return res.status(404).json(new ApiResponse(404, null, 'Product not found.'));
+  const postId = parseInt(req.params.id, 10);
+  const updatedPost = await postService.updatePost(postId, req.body);  
+  if (!updatedPost) {
+    return res.status(404).json(new ApiResponse(404, null, 'Post not found.'));
   }
 
-  return res.json(new ApiResponse(200, updatedProduct, 'Product updated successfully'));
+  return res.json(new ApiResponse(200, updatedPost, 'Post updated successfully'));
 });
 
-export const deleteProduct = asyncHandler(async (req, res) => {
-  const productId = parseInt(req.params.id, 10);
-  const success = await productService.deleteProduct(productId);  
+export const deletePost = asyncHandler(async (req, res) => {
+  const postId = parseInt(req.params.id, 10);
+  const success = await postService.deletePost(postId);  
   if (!success) {
-    return res.status(404).json(new ApiResponse(404, null, 'Product not found.'));
+    return res.status(404).json(new ApiResponse(404, null, 'Post not found.'));
   }
   return res.status(204).send(); 
 });
 
-export const updatePartialProduct = asyncHandler(async (req, res) => {
+export const updatePartialPost = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const updateFields = req.body;
 
@@ -71,10 +67,10 @@ export const updatePartialProduct = asyncHandler(async (req, res) => {
     return res.status(400).json(new ApiResponse(400, errors.array(), 'Validation errors'));
   }
 
-  const updatedProduct = await productService.updatePartialProduct(id, updateFields); 
-  if (!updatedProduct) {
-    return res.status(404).json(new ApiResponse(404, null, 'Product not found.'));
+  const updatedPost = await postService.updatePartialPost(id, updateFields); 
+  if (!updatedPost) {
+    return res.status(404).json(new ApiResponse(404, null, 'Post not found.'));
   }
 
-  return res.json(new ApiResponse(200, updatedProduct, 'Product partially updated successfully'));
+  return res.json(new ApiResponse(200, updatedPost, 'Post partially updated successfully'));
 });
