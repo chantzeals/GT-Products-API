@@ -23,7 +23,7 @@ app.use(express.json());
 app.use('/api/v1/posts', postRoutes);
 app.use('/api/v1/users', userRoutes);
 app.use(errorHandler);
-app.use('/', commentRoutes);
+app.use('/api/v1', commentRoutes);
 
 
 app.listen(port, () => {

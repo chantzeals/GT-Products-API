@@ -1,10 +1,9 @@
-import express from 'express';
-import CommentController from '../Controllers/comment.controller.js'; 
+import { Router } from 'express';
+import * as commentController from '../Controllers/comment.controller.js';
+import { createCommentRules, validate } from '../../../middleware/validator.middleware.js';
 
-const router = express.Router();
+const router = Router();
 
-router.get('/comments', CommentController.getAll);
-router.get('/posts/:postId/comments', CommentController.getByPostId);
-router.post('/posts/:postId/comments', CommentController.create);
+router.post('/comments', createCommentRules, validate, commentController.createComment);
 
 export default router;

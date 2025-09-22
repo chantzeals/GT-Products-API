@@ -53,6 +53,17 @@ export const updateValidationRules = [
     .trim(),
 ];
 
+export const createCommentRules = [
+  body('postId')
+    .isInt({ min: 1 }).withMessage('A valid post ID is required.'),
+  body('authorId')
+    .isInt({ min: 1 }).withMessage('A valid author ID is required.'),
+  body('content')
+    .isString().withMessage('Content must be a string.')
+    .isLength({ min: 1 }).withMessage('Comment cannot be empty.')
+];
+
+
 export const validate = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
