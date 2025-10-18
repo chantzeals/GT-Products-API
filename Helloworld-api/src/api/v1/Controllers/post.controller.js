@@ -19,20 +19,14 @@ export const getPostById = asyncHandler(async (req, res) => {
   return res.json(new ApiResponse(200, post, 'Post retrieved successfully'));
 });
 
-export const createPost = async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json(new ApiResponse(400, errors.array(), 'Validation errors'));
-  }
+export const createPost = asyncHandler(async (req, res) => {
+  const authorId = req.user.id; 
+  const postData = req.body;    
 
-  try {
-    const newPost = await postService.createPost(req.body);
-    return res.status(201).json(new ApiResponse(201, newPost, 'Post created successfully'));
-  } catch (error) {
-    console.error('Error creating post:', error);
-    return res.status(500).json(new ApiResponse(500, null, 'Internal server error'));
-  }
-};
+  const newPost = await postService.createPost(postData, authorId);
+  res.status(201).json(new ApiResponse(201, newPost, "Post created successfully"));
+});
+
 
 export const updatePost = asyncHandler(async (req, res) => {
   const errors = validationResult(req);

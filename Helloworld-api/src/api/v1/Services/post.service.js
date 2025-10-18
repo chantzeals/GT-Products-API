@@ -42,34 +42,35 @@ export const getPostById = async (id) => {
   return rows[0];
 };
 
-export const createPost = async (postData) => {
-    const { title, content, authorId } = postData;
+export const createPost = async (postData, authorId) => {
+  const { title, content } = postData;
 
-    if (!title || typeof title !== 'string' || title.trim() === '') {
-        throw new ApiError(400, 'Title is required and should be a non-empty string.');
+  if (!title || typeof title !== 'string' || title.trim() === '') {
+    throw new ApiError(400, 'Title is required and should be a non-empty string.');
+  }
+
+  if (!content || typeof content !== 'string' || content.trim() === '') {
+    throw new ApiError(400, 'Content is required and should be a non-empty string.');
+  }
+
+  if (!authorId || !Number.isInteger(authorId) || authorId < 1) {
+    throw new ApiError(400, 'A valid author ID is required.');
+  }
+
+  const query = 'INSERT INTO posts (title, content, authorId) VALUES (?, ?, ?)';
+
+  try {
+    const [result] = await pool.query(query, [title, content, authorId]);
+    
+    const newPost = await getPostById(result.insertId);
+    return newPost;
+  } catch (error) {
+    if (error.code === 'ER_NO_REFERENCED_ROW_2') {
+      throw new ApiError(400, 'Invalid author ID. User does not exist.');
     }
-
-    if (!content || typeof content !== 'string' || content.trim() === '') {
-        throw new ApiError(400, 'Content is required and should be a non-empty string.');
-    }
-
-    if (!authorId || !Number.isInteger(authorId) || authorId < 1) {
-        throw new ApiError(400, 'A valid author ID is required.');
-    }
-
-    const query = 'INSERT INTO posts (title, content, authorId) VALUES (?, ?, ?)';
-
-    try {
-        const [result] = await pool.query(query, [title, content, authorId]);
-        const newPost = { id: result.insertId, title, content, authorId };
-        return newPost;
-    } catch (error) {
-        if (error.code === 'ER_NO_REFERENCED_ROW_2') {
-            throw new ApiError(400, 'Invalid author ID. User does not exist.');
-        }
-        console.error('Error creating post:', error);
-        throw new ApiError(500, 'Error creating new post');
-    }
+    console.error('Error creating post:', error);
+    throw new ApiError(500, 'Error creating new post');
+  }
 };
 
 export const updatePost = async (id, postData) => {

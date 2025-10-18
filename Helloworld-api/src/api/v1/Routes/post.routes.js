@@ -2,20 +2,22 @@ import { Router } from 'express';
 import {
   createPostRules,
   updateValidationRules,
-  validateComment
+  validateComment,
+  validatePost
 } from '../../../middleware/validator.middleware.js';
 
 import * as postController from '../Controllers/post.controller.js';
 import * as commentController from '../Controllers/comment.controller.js';
+import { authMiddleware } from '../../../middleware/auth.middleware.js';
 
 const router = Router();
 
-router.post('/', createPostRules, postController.createPost);
-router.put('/:id', updateValidationRules, postController.updatePost);
-router.patch('/:id', updateValidationRules, postController.updatePartialPost);
+router.post('/', authMiddleware, createPostRules, postController.createPost);
+router.put('/:id', authMiddleware, updateValidationRules, postController.updatePost);
+router.patch('/:id', authMiddleware, updateValidationRules, postController.updatePartialPost);
 router.get('/', postController.getAllPost);
 router.get('/:id', postController.getPostById);
-router.delete('/:id', postController.deletePost);
+router.delete('/:id', authMiddleware, postController.deletePost);
 
 router.post('/:postId/comments', validateComment, commentController.createCommentForPost);
 router.get('/:postId/comments', commentController.getCommentsByPostId);

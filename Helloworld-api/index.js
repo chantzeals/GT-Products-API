@@ -1,4 +1,6 @@
 import express from 'express';
+import dotenv from 'dotenv';
+dotenv.config(); 
 import postRoutes from './src/api/v1/Routes/post.routes.js';
 import commentRoutes from './src/api/v1/Routes/comment.route.js';
 import userRoutes from './src/api/v1/Routes/user.routes.js'; 
