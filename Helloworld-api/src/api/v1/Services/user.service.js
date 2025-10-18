@@ -1,7 +1,9 @@
-import { ApiError } from '../../../utils/ApiError.js'; 
+import { ApiError } from '../../../utils/ApiError.js';
 import pool from '../../../config/db.js';
+import bcrypt from 'bcrypt';
 
-async function createUser(userData) {
+
+export const createUser = async (userData) => {
   const { username, email } = userData;
 
   try {
@@ -17,31 +19,55 @@ async function createUser(userData) {
     }
     throw error;
   }
-}
+};
 
-async function getUserById(id) {
-  const [rows] = await pool.query('SELECT * FROM users WHERE id = ?', [id]);
 
+export const getUserById = async (id) => {
+  const [rows] = await pool.query(
+    'SELECT id, username, email, createdAt FROM users WHERE id = ?',
+    [id]
+  );
   if (rows.length === 0) {
-    throw new ApiError(404, 'User not found.');
+    throw new ApiError(404, "User not found");
   }
-
   return rows[0];
-}
+};
 
-async function getAllUsers() {
-  const [rows] = await pool.query('SELECT * FROM users');
-  return rows;
-}
+
+export const getAllUsers = async () => {
+  const [users] = await pool.query(
+    'SELECT id, username, email, createdAt FROM users'
+  );
+  return users;
+};
 
 export const getPostsByAuthorId = async (authorId) => {
-  const [rows] = await pool.query('SELECT * FROM posts WHERE authorId = ?', [authorId]);
+  const [rows] = await pool.query(
+    'SELECT * FROM posts WHERE authorId = ?',
+    [authorId]
+  );
   return rows;
 };
 
-export {
-  createUser,
-  getUserById,
-  getAllUsers,
 
+export const registerUser = async (userData) => {
+  const { username, email, password } = userData;
+  try {
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    const [result] = await pool.query(
+      'INSERT INTO users (username, email, password) VALUES (?, ?, ?)',
+      [username, email, hashedPassword]
+    );
+
+    const newUser = await getUserById(result.insertId);
+    return newUser;
+
+  } catch (error) {
+    if (error.code === 'ER_DUP_ENTRY') {
+      throw new ApiError(409, "Username or email already exists.");
+    }
+    throw error;
+  }
 };

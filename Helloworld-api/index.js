@@ -2,6 +2,7 @@ import express from 'express';
 import postRoutes from './src/api/v1/Routes/post.routes.js';
 import commentRoutes from './src/api/v1/Routes/comment.route.js';
 import userRoutes from './src/api/v1/Routes/user.routes.js'; 
+import authRoutes from './src/api/v1/Routes/auth.route.js';
 import morgan from 'morgan';
 import config from './src/config/index.js';
 import { errorHandler } from './src/middleware/errorHandler.middleware.js';
@@ -20,6 +21,7 @@ if (config.nodeEnv === 'development') {
 
 app.use(morgan('combined'));
 app.use(express.json());
+app.use('/api/v1/auth', authRoutes); 
 app.use('/api/v1/posts', postRoutes);
 app.use('/api/v1/users', userRoutes);
 app.use(errorHandler);
