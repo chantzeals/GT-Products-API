@@ -22,4 +22,7 @@ router.delete('/:id', authMiddleware, postController.deletePost);
 router.post('/:postId/comments', validateComment, commentController.createCommentForPost);
 router.get('/:postId/comments', commentController.getCommentsByPostId);
 
+router.put('/:id', authMiddleware, validatePost, postController.updatePost);
+router.delete('/:id', authMiddleware, postController.deletePost);
+
 export default router;

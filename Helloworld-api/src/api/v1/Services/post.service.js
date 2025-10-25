@@ -73,42 +73,35 @@ export const createPost = async (postData, authorId) => {
   }
 };
 
-export const updatePost = async (id, postData) => {
+export const updatePost = async (id, postData, userId) => { 
     const { title, content } = postData;
 
-    if (!title || typeof title !== 'string' || title.trim() === '') {
-        throw new ApiError(400, 'Title is required and should be a non-empty string.');
+    const post = await getPostById(id); 
+
+    if (post.authorId !== userId) {
+        throw new ApiError(403, "Forbidden: You do not have permission to edit this post.");
     }
 
-    if (!content || typeof content !== 'string' || content.trim() === '') {
-        throw new ApiError(400, 'Content is required and should be a non-empty string.');
-    }
-
-    const query = 'UPDATE posts SET title = ?, content = ? WHERE id = ?';
-
-    try {
-        const [result] = await pool.query(query, [title, content, id]);
-        if (result.affectedRows === 0) {
-            throw new ApiError(404, 'Post not found'); 
-        }
-        return { id, title, content };
-    } catch (error) {
-        throw new ApiError(500, 'Error updating post');
-    }
+    await pool.query(
+        'UPDATE posts SET title = ?, content = ? WHERE id = ?',
+        [title, content, id]
+    );
+    const updatedPost = await getPostById(id);
+    return updatedPost;
 };
 
-export const deletePost = async (id) => {
-    const query = 'DELETE FROM posts WHERE id = ?';
+export const deletePost = async (id, userId) => { 
+   
+    const post = await getPostById(id); 
 
-    try {
-        const [result] = await pool.query(query, [id]);
-        if (result.affectedRows === 0) {
-            throw new ApiError(404, 'Post not found');  
-        }
-        return true; 
-    } catch (error) {
-        throw new ApiError(500, 'Error deleting post');
+
+    if (post.authorId !== userId) {
+        throw new ApiError(403, "Forbidden: You do not have permission to delete this post.");
     }
+    
+
+    const [result] = await pool.query('DELETE FROM posts WHERE id = ?', [id]);
+    return result.affectedRows;
 };
 
 export const updatePartialPost = async (id, updateFields) => {

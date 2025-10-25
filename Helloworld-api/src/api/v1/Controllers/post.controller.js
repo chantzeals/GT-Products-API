@@ -29,27 +29,20 @@ export const createPost = asyncHandler(async (req, res) => {
 
 
 export const updatePost = asyncHandler(async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json(new ApiResponse(400, errors.array(), 'Validation errors'));
-  }
+    const postId = parseInt(req.params.id, 10);
+    const postData = req.body;
+    const userId = req.user.id; 
 
-  const postId = parseInt(req.params.id, 10);
-  const updatedPost = await postService.updatePost(postId, req.body);  
-  if (!updatedPost) {
-    return res.status(404).json(new ApiResponse(404, null, 'Post not found.'));
-  }
-
-  return res.json(new ApiResponse(200, updatedPost, 'Post updated successfully'));
+    const updatedPost = await postService.updatePost(postId, postData, userId);
+    res.status(200).json(new ApiResponse(200, updatedPost, "Post updated successfully"));
 });
 
 export const deletePost = asyncHandler(async (req, res) => {
-  const postId = parseInt(req.params.id, 10);
-  const success = await postService.deletePost(postId);  
-  if (!success) {
-    return res.status(404).json(new ApiResponse(404, null, 'Post not found.'));
-  }
-  return res.status(204).send(); 
+    const postId = parseInt(req.params.id, 10);
+    const userId = req.user.id;
+
+    await postService.deletePost(postId, userId);
+    res.status(200).json(new ApiResponse(200, null, "Post deleted successfully"));
 });
 
 export const updatePartialPost = asyncHandler(async (req, res) => {
