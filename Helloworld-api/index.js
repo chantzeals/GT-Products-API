@@ -5,6 +5,7 @@ import postRoutes from './src/api/v1/Routes/post.routes.js';
 import commentRoutes from './src/api/v1/Routes/comment.route.js';
 import userRoutes from './src/api/v1/Routes/user.routes.js'; 
 import authRoutes from './src/api/v1/Routes/auth.route.js';
+import photoRoutes from './src/api/v1/Routes/photo.routes.js';
 import morgan from 'morgan';
 import config from './src/config/index.js';
 import { errorHandler } from './src/middleware/errorHandler.middleware.js';
@@ -29,6 +30,8 @@ app.use('/api/v1/users', userRoutes);
 app.use(errorHandler);
 app.use('/api/v1', commentRoutes);
 app.use(errorHandler);
+app.use('/uploads', express.static('uploads'));
+app.use('/api/v1/photos', photoRoutes);
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
