@@ -4,27 +4,29 @@ import asyncHandler from '../utils/asyncHandler.js';
 import { getUserById } from '../api/v1/Services/user.service.js';
 
 export const authMiddleware = asyncHandler(async (req, res, next) => {
-    let token;
+    const authHeader = req.headers.authorization;
 
-
-    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-        try {
-            
-            token = req.headers.authorization.split(' ')[1];
-
-
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-
-            req.user = await getUserById(decoded.id);
-
-            next(); 
-        } catch (error) {
-            throw new ApiError(401, "Not authorized, token failed");
-        }
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        throw new ApiError(401, "Not authorized, no token provided");
     }
 
-    if (!token) {
-        throw new ApiError(401, "Not authorized, no token");
+    const token = authHeader.split(' ')[1];
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // important: check correct property name (id or userId)
+    const userId = decoded.id || decoded.userId;
+
+    if (!userId) {
+        throw new ApiError(401, "Invalid token payload: no user id");
     }
+
+    const user = await getUserById(userId);
+
+    if (!user) {
+        throw new ApiError(401, "User no longer exists");
+    }
+
+    req.user = user;
+    next();
 });

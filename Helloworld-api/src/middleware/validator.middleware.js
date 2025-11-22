@@ -76,16 +76,16 @@ export const updateValidationRules = [
   handleValidationErrors,
 ];
 
-export const validateComment = [
-  body('content')
-    .isString().withMessage('Content must be a string.')
-    .isLength({ min: 1 }).withMessage('Comment cannot be empty.'),
 
-  body('authorId')
-    .isInt({ min: 1 }).withMessage('A valid author ID is required.'),
 
-  handleValidationErrors,
-];
+export const validateComment = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ success: false, errors: errors.array() });
+  }
+  next();
+};
+
 
 export const validateRegistration = [
   body('username')
